@@ -3,13 +3,15 @@ package models
 import (
 	"database/sql"
 
+	"time"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
 var DB *sql.DB
 
 func ConnectDatabase() error {
-	db, err := sql.Open("sqlite3", "./sqlite.db")
+	db, err := sql.Open("sqlite3", "./todo.db")
 	if err != nil {
 		return err
 	}
@@ -19,12 +21,13 @@ func ConnectDatabase() error {
 }
 
 
+
 type Todo struct {
-	Id         int    `json:"id"`
-	Name     string `json:"name"`
-	Description      string `json:"description"`
-	Completed    string `json:"completed"`
-	CompletedAt      string `json:"completed_at"`
+	Id          int       `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
+	Completed   string    `json:"completed"`
+	CompletedAt time.Time `json:"completed_at"`
 }
 
 func GetTodos() ([]Todo, error) {
@@ -70,7 +73,27 @@ func CreateTodo(todo Todo) error {
 }
 
 func DeleteTodoById(id string) error {
-	_, err := DB.Exec("DELETE FROM todo_list WHERE id=?", id)
+	_, err := DB.Exec("SELECT * FROM todo_list WHERE id=?", id)
+	if err != nil {
+		return err
+	}
+	_, err = DB.Exec("DELETE FROM todo_list WHERE id=?", id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func UpdateTodoById(id string, todo Todo) error {
+	//if id not found, return error
+	_, err := DB.Exec("SELECT * FROM todo_list WHERE id=?", id)
+	if err != nil {
+		return err
+	}
+	
+	_, err = DB.Exec("UPDATE todo_list SET name=?, description=?, completed=?, completed_at=? WHERE id=?", todo.Name, todo.Description, todo.Completed, todo.CompletedAt, id)
 
 	if err != nil {
 		return err

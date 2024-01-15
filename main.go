@@ -14,11 +14,12 @@ func main() {
 
 	r := gin.Default()
 
-	router := r.Group("/todo")
+	router := r.Group("/todos")
 	{
-		router.POST("/create", createTodo)
+		router.POST("/", createTodo)
 		router.GET("/", listTodo)
-		router.GET("/delete/:id", deleteTodo)
+		router.DELETE("/:id", deleteTodo)
+		router.PATCH("/:id", updateTodo)
 	}
 
 	r.Run(":8081")
@@ -38,8 +39,20 @@ func listTodo(c *gin.Context) {
 }
 
 func createTodo (c *gin.Context) {
+
+	// check if the request body is empty
+	if c.Request.Body == nil {
+		c.JSON(400, gin.H{"error": "Request body is empty"})
+		return
+	}
 	var todo models.Todo
+	
 	c.BindJSON(&todo)
+
+	if (todo.Name == "" || todo.Description == "" ) {
+		c.JSON(400, gin.H{"error": "All fields are required"})
+		return
+	}
 
 	err := models.CreateTodo(todo)
 	checkErr(err)
@@ -59,4 +72,21 @@ func checkErr(err error) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func updateTodo (c *gin.Context) {
+	id := c.Param("id")
+	var todo models.Todo
+	
+	c.BindJSON(&todo)
+
+	if (todo.Name == "" || todo.Description == "" ) {
+		c.JSON(400, gin.H{"error": "All fields are required"})
+		return
+	}
+
+	err := models.UpdateTodoById(id, todo)
+	checkErr(err)
+
+	c.JSON(200, gin.H{"message": "Todo updated successfully"})
 }
