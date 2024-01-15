@@ -58,3 +58,23 @@ func GetTodos() ([]Todo, error) {
 
 	return todos, nil
 }
+
+func CreateTodo(todo Todo) error {
+	_, err := DB.Exec("INSERT INTO todo_list (name, description, completed, completed_at) VALUES (?, ?, ?, ?)", todo.Name, todo.Description, todo.Completed, todo.CompletedAt)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func DeleteTodoById(id string) error {
+	_, err := DB.Exec("DELETE FROM todo_list WHERE id=?", id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,32 +1,62 @@
 package main
 
 import (
+	"log"
+	"todo-app/models"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-r:=gin.Default()
+	err := models.ConnectDatabase()
+	checkErr(err)
+
+	r := gin.Default()
 
 	router := r.Group("/todo")
 	{
-		router.POST("/create", addTodo)
+		router.POST("/create", createTodo)
 		router.GET("/", listTodo)
 		router.GET("/delete/:id", deleteTodo)
 	}
 
-	r.Run(":8081") 
+	r.Run(":8081")
 
-}
-
-func addTodo(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "A new Record Created!"})
 }
 
 func listTodo(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "All Records"})
+	todos, err := models.GetTodos()
+	checkErr(err)
+
+	if todos == nil {
+		c.JSON(404, gin.H{"error": "No Records Found"})
+		return
+	} else {
+		c.JSON(200, gin.H{"data": todos})
+	}
+}
+
+func createTodo (c *gin.Context) {
+	var todo models.Todo
+	c.BindJSON(&todo)
+
+	err := models.CreateTodo(todo)
+	checkErr(err)
+
+	c.JSON(200, gin.H{"message": "Todo task created successfully"})
 }
 
 func deleteTodo(c *gin.Context) {
-	c.JSON(200, gin.H{"message": "Record Deleted!"})
+	id := c.Param("id")
+	err := models.DeleteTodoById(id)
+	checkErr(err)
+
+	c.JSON(200, gin.H{"message": "Todo deleted successfully"})
+}
+
+func checkErr(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }

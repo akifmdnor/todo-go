@@ -14,20 +14,20 @@ Brief description of the project.
 
 1. Clone the repository: `git clone https://github.com/username/repository.git`
 2. Navigate to the project directory: `cd repository`
-3. Install the dependencies: `go mod download`
+3. Install the dependencies: `npm install`
 
 ## Usage
 
-1. Build the application: `go build`
-2. Run the application: `./application`
-3. Open your browser and go to `http://localhost:8080`
+1. Build the application: `npm run build`
+2. Run the application: `npm start`
+3. Open your browser and go to `http://localhost:8081`
 4. Follow the instructions on the screen to use the application.
 
 ## API Endpoints
 
-- `GET /api/todos`: Get all users.
-- `POST /api/users`: Create a new user.
-- `PUT /api/users/{id}`: Update an existing user.
+- `GET /api/todos`: Get all todos.
+- `POST /api/todos`: Create a new todo.
+- `PUT /api/todos/{id}`: Update an existing todo.
 
 ## Contributing
 
