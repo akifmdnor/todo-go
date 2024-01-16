@@ -4,8 +4,8 @@ import (
 	"log"
 	"todo-app/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/rs/cors"
 )
 
 func main() {
@@ -13,34 +13,23 @@ func main() {
 	checkErr(err)
 
 	r := gin.Default()
+	r.Use(cors.New(CORSConfig()))
 
-	router := r.Group("/todos")
-	{
-		router.POST("", createTodo)
-		router.GET("", listTodo)
-		router.DELETE("/:id", deleteTodo)
-		router.PATCH("/:id", updateTodo)
-	}
-
-	c := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"}, // Add your frontend origin here
-		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE"},
-		AllowedHeaders: []string{"*"},
-	})
-
-	r.Use(corsWrapper(c))
+	r.POST("/todos/", createTodo)
+	r.GET("/todos/", listTodo)
+	r.DELETE("/todos/:id", deleteTodo)
+	r.PATCH("/todos/:id", updateTodo)
 
 	r.Run()
 }
 
-func corsWrapper(c *cors.Cors) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		c.HandlerFunc(ctx.Writer, ctx.Request)
-		ctx.Writer.Header().Set("Access-Control-Allow-Origin", "*") // Add your frontend origin here
-		ctx.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE")
-		ctx.Writer.Header().Set("Access-Control-Allow-Headers", "*")
-		ctx.Next()
-	}
+func CORSConfig() cors.Config {
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"}
+	corsConfig.AllowCredentials = true
+	corsConfig.AddAllowHeaders("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers", "Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization")
+	corsConfig.AddAllowMethods("GET", "POST", "PUT", "DELETE")
+	return corsConfig
 }
 
 func listTodo(c *gin.Context) {
