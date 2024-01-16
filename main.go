@@ -4,11 +4,11 @@ import (
 	"log"
 	"todo-app/models"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-
 	err := models.ConnectDatabase()
 	checkErr(err)
 
@@ -22,8 +22,15 @@ func main() {
 		router.PATCH("/:id", updateTodo)
 	}
 
-	r.Run(":8081")
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"*"}
+	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 
+	// Apply CORS middleware
+	r.Use(cors.New(config))
+
+	r.Run(":8081")
 }
 
 func listTodo(c *gin.Context) {
@@ -38,7 +45,7 @@ func listTodo(c *gin.Context) {
 	}
 }
 
-func createTodo (c *gin.Context) {
+func createTodo(c *gin.Context) {
 
 	// check if the request body is empty
 	if c.Request.Body == nil {
@@ -46,10 +53,10 @@ func createTodo (c *gin.Context) {
 		return
 	}
 	var todo models.Todo
-	
+
 	c.BindJSON(&todo)
 
-	if (todo.Name == "" || todo.Description == "" ) {
+	if todo.Name == "" || todo.Description == "" {
 		c.JSON(400, gin.H{"error": "All fields are required"})
 		return
 	}
@@ -74,13 +81,13 @@ func checkErr(err error) {
 	}
 }
 
-func updateTodo (c *gin.Context) {
+func updateTodo(c *gin.Context) {
 	id := c.Param("id")
 	var todo models.Todo
-	
+
 	c.BindJSON(&todo)
 
-	if (todo.Name == "" || todo.Description == "" ) {
+	if todo.Name == "" || todo.Description == "" {
 		c.JSON(400, gin.H{"error": "All fields are required"})
 		return
 	}
