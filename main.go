@@ -20,7 +20,7 @@ func main() {
 	r.DELETE("/todos/:id", deleteTodo)
 	r.PATCH("/todos/:id", updateTodo)
 
-	r.Run()
+	r.Run(":8082")
 }
 
 func CORSConfig() cors.Config {
@@ -45,22 +45,24 @@ func listTodo(c *gin.Context) {
 }
 
 func createTodo(c *gin.Context) {
-
-	// check if the request body is empty
 	if c.Request.Body == nil {
-		c.JSON(400, gin.H{"error": "Request body is empty"})
+		c.AbortWithStatusJSON(400, gin.H{"error": "Request body is empty"})
 		return
 	}
 	var todo models.Todo
 
-	c.BindJSON(&todo)
-
-	if todo.Name == "" || todo.Description == "" {
-		c.JSON(400, gin.H{"error": "All fields are required"})
+	err := c.BindJSON(&todo)
+	if err != nil {
+		log.Println(err)
 		return
 	}
 
-	err := models.CreateTodo(todo)
+	if todo.Name == "" {
+		c.AbortWithStatusJSON(400, gin.H{"error": "All fields are required"})
+		return
+	}
+
+	err = models.CreateTodo(todo)
 	checkErr(err)
 
 	c.JSON(200, gin.H{"message": "Todo task created successfully"})
@@ -86,7 +88,7 @@ func updateTodo(c *gin.Context) {
 
 	c.BindJSON(&todo)
 
-	if todo.Name == "" || todo.Description == "" {
+	if todo.Name == "" {
 		c.JSON(400, gin.H{"error": "All fields are required"})
 		return
 	}

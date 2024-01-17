@@ -3,8 +3,6 @@ package models
 import (
 	"database/sql"
 
-	"time"
-
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -20,14 +18,11 @@ func ConnectDatabase() error {
 	return nil
 }
 
-
-
 type Todo struct {
-	Id          int       `json:"id"`
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	Completed   string    `json:"completed"`
-	CompletedAt time.Time `json:"completed_at"`
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Completed   bool   `json:"completed"`
+	CompletedAt string `json:"completed_at"`
 }
 
 func GetTodos() ([]Todo, error) {
@@ -44,7 +39,7 @@ func GetTodos() ([]Todo, error) {
 
 	for rows.Next() {
 		todo := Todo{}
-		err = rows.Scan(&todo.Id, &todo.Name, &todo.Description, &todo.Completed, &todo.CompletedAt)
+		err = rows.Scan(&todo.Id, &todo.Name, &todo.Completed, &todo.CompletedAt)
 
 		if err != nil {
 			return nil, err
@@ -63,7 +58,7 @@ func GetTodos() ([]Todo, error) {
 }
 
 func CreateTodo(todo Todo) error {
-	_, err := DB.Exec("INSERT INTO todo_list (name, description, completed, completed_at) VALUES (?, ?, ?, ?)", todo.Name, todo.Description, todo.Completed, todo.CompletedAt)
+	_, err := DB.Exec("INSERT INTO todo_list (name, completed, completed_at) VALUES (?, ?, ?)", todo.Name, todo.Completed, todo.CompletedAt)
 
 	if err != nil {
 		return err
@@ -87,13 +82,13 @@ func DeleteTodoById(id string) error {
 }
 
 func UpdateTodoById(id string, todo Todo) error {
-	//if id not found, return error
+
 	_, err := DB.Exec("SELECT * FROM todo_list WHERE id=?", id)
 	if err != nil {
 		return err
 	}
-	
-	_, err = DB.Exec("UPDATE todo_list SET name=?, description=?, completed=?, completed_at=? WHERE id=?", todo.Name, todo.Description, todo.Completed, todo.CompletedAt, id)
+
+	_, err = DB.Exec("UPDATE todo_list SET name=?, completed=?, completed_at=? WHERE id=?", todo.Name, todo.Completed, todo.CompletedAt, id)
 
 	if err != nil {
 		return err
