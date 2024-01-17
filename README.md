@@ -1,41 +1,35 @@
 # Project Name
 
-Brief description of the project.
+Akif's Task Management APP showcase a [Backend in Go](https://github.com/akifmdnor/todo-go) and [Vue Frontend] (https://github.com/akifmdnor/todo-vue)
+
+## Live endpoint
+https://radiant-atoll-90845-e9a5ce57817b.herokuapp.com/
 
 ## Table of Contents
 
 - [Installation](#installation)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
-- [Contributing](#contributing)
 - [License](#license)
 
 ## Installation
 
-1. Clone the repository: `git clone https://github.com/username/repository.git`
+1. Clone the repository: `git clone https://github.com/akifmdnor/todo-go.git`
 2. Navigate to the project directory: `cd repository`
-3. Install the dependencies: `npm install`
+
 
 ## Usage
 
-1. Build the application: `npm run build`
-2. Run the application: `npm start`
-3. Open your browser and go to `http://localhost:8081`
-4. Follow the instructions on the screen to use the application.
+1. Build the application: `go build`
+2. Run the application: `./todo-app`
 
 ## API Endpoints
 
-- `GET /api/todos`: Get all todos.
-- `POST /api/todos`: Create a new todo.
-- `PUT /api/todos/{id}`: Update an existing todo.
+- `GET /todos`: Get all todos.
+- `POST /todos`: Create a new todo.
+- `PUT /todos/{id}`: Update an existing todo.
+- `DELETE /todos/{id}`: Delete an existing todo.
 
-## Contributing
-
-1. Fork the repository.
-2. Create a new branch: `git checkout -b feature/your-feature`
-3. Make your changes and commit them: `git commit -m 'Add some feature'`
-4. Push to the branch: `git push origin feature/your-feature`
-5. Submit a pull request.
 
 ## License
 
