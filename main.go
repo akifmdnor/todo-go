@@ -20,7 +20,7 @@ func main() {
 	r.DELETE("/todos/:id", deleteTodo)
 	r.PATCH("/todos/:id", updateTodo)
 
-	r.Run(":8082")
+	r.Run()
 }
 
 func CORSConfig() cors.Config {
